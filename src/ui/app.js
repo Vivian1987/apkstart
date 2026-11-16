@@ -141,17 +141,17 @@ function renderGrid() {
   }
 
   grid.innerHTML = apps.map((a) => `
-    <div class="card" data-pkg="${esc(a.package)}" title="${esc(a.label)} · ${esc(a.package)}">
+    <div class="card" data-pkg="${esc(a.package)}" title="${esc(a.label)} · ${esc(a.package)}" translate="no">
       ${a.pinned ? '<span class="pin">★</span>' : ''}
-      ${a.running ? '<span class="badge-run" title="正在运行"></span>' : ''}
+      ${a.running ? '<span class="badge-run" title="正在运行" translate="yes"></span>' : ''}
       <div class="icon">
         ${a.iconUrl
           ? `<img src="${esc(a.iconUrl)}" alt="" draggable="false" />`
           : `<div class="fallback" style="background:${esc(a.accent || '#9aa6b2')}">${esc(initialOf(a.label))}</div>`}
       </div>
       <div class="name">${esc(a.label)}</div>
-      <div class="meta">${a.running ? '运行中' : `v${esc(a.versionName)}${a.lastLaunchAt ? ' · ' + relTime(a.lastLaunchAt) : ''}`}</div>
-      <div class="open-hint">${a.running ? '切换到前台' : '打开'}</div>
+      <div class="meta" translate="yes">${a.running ? '运行中' : `v${esc(a.versionName)}${a.lastLaunchAt ? ' · ' + relTime(a.lastLaunchAt) : ''}`}</div>
+      <div class="open-hint" translate="yes">${a.running ? '切换到前台' : '打开'}</div>
     </div>
   `).join('');
 }
@@ -730,6 +730,7 @@ function fillSettings(s) {
   $('setDeviceSharedDir').value = s.deviceSharedDir || '';
   const d = s.display || {};
   $('setAutoStart').checked = s.autoStart !== false;
+  if ($('setUiLang')) $('setUiLang').value = s.uiLang || 'auto';
   const eng = s.engine || {};
   if ($('setResourceMode')) $('setResourceMode').value = eng.resourceMode || 'balanced';
   if ($('setRenderSize')) $('setRenderSize').value = eng.renderSize || 'auto';
@@ -1046,6 +1047,12 @@ function bindSettings() {
   $('setShortcutDir').addEventListener('change', (e) => save({ shortcutDir: e.target.value.trim() }));
   $('setDeviceSharedDir').addEventListener('change', (e) => save({ deviceSharedDir: e.target.value.trim() }));
   $('setAutoStart').addEventListener('change', (e) => save({ autoStart: e.target.checked }));
+  // 界面语言：存好后整页重载，重载完回到设置页（翻译只在显示时做，重载是切回中文最干净的办法）
+  if ($('setUiLang')) $('setUiLang').addEventListener('change', async (e) => {
+    await save({ uiLang: e.target.value });
+    try { sessionStorage.setItem('apkstart.reopenSettings', '1'); } catch (_) { /* ignore */ }
+    location.reload();
+  });
   $('setDisplayMode').addEventListener('change', async (e) => {
     const mode = e.target.value;
     $('portraitField').hidden = mode === 'fullscreen';
@@ -1632,7 +1639,13 @@ async function init() {
   await refreshApps();
   refreshAndroid();
   selfCheck();
-  maybeShowWelcome();
+  let reopenSettings = false;
+  try {
+    reopenSettings = sessionStorage.getItem('apkstart.reopenSettings') === '1';
+    sessionStorage.removeItem('apkstart.reopenSettings');
+  } catch (_) { /* ignore */ }
+  if (reopenSettings) openSettings();
+  else maybeShowWelcome();
   setInterval(refreshStatus, 6000);
   setInterval(refreshApps, 15000);
   setInterval(selfCheck, 60000);

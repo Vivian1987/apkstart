@@ -34,7 +34,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "test": "node test/run-tests.js && node test/engine-test.js && node test/auto-test.js",
+    "test": "node test/run-tests.js && node test/engine-test.js && node test/auto-test.js && node test/i18n-test.js",
     "pack": "node build/pack.js",
     "runtime": "node build/prepare-runtime.js",
     "build:exe": "node build/prepare-runtime.js && electron-builder --win nsis",

@@ -7,6 +7,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-0078D6.svg)](#)
 
+**简体中文** | [Español](README.es.md)
+
 **Windows 上的安卓应用运行器 —— 让安卓应用像 Windows 原生软件一样被安装和使用。**
 
 - 🖱️ **双击 .apk 即安装**：注册 .apk 文件关联后，在资源管理器里双击 APK，自动解析 → 安装 → 生成桌面图标，全程无需打开任何模拟器界面。
@@ -15,6 +17,7 @@
 - 🔍 **能被 Windows 搜到**：安装后同时创建桌面 + 开始菜单（`程序\ApkStart\`）快捷方式，按应用名在开始菜单搜索即可直达，任务栏按应用分组。
 - 📁 **数据互通**：`%USERPROFILE%\ApkStartShared` ↔ 安卓内 `/sdcard/ApkStartShared` 持续双向同步，安卓应用存下的文件直接出现在本机。
 - 🪶 **极致轻量**：壳层本身零第三方依赖（连 ZIP / PNG / ICO / AXML 解析都是手写的），运行时按需拉起，空闲自动回收；也可以完全复用你机器上已有的安卓运行时，额外占用为零。
+- 🌐 **中文 / 西班牙语界面**：设置 → 「语言 · Language」可选 简体中文、Español 或「跟随系统」，主界面、应用窗口、托盘菜单、通知和对话框一起切换。
 
 ![主界面](docs/images/app.png)
 
@@ -169,6 +172,7 @@ apkstart/
 │  ├─ main.js              主进程：窗口/托盘/单实例/命令行分发/IPC
 │  ├─ preload.js           安全桥接
 │  ├─ ui/                  渲染层（原生 HTML/CSS/JS，无框架）
+│  ├─ i18n/                界面多语言（i18n.js 翻译引擎，es.js 西班牙语词典）
 │  └─ core/
 │     ├─ zip.js            极简 ZIP 读取器（按需解压）
 │     ├─ axml.js           Android 二进制 XML 解析
