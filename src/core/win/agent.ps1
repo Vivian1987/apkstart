@@ -42,6 +42,10 @@ public class ApkAgent
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetClassNameW(IntPtr h, StringBuilder s, int n);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetWindowTextW(IntPtr h, StringBuilder s, int n);
     [DllImport("user32.dll")] static extern IntPtr SetParent(IntPtr c, IntPtr p);
+    // 高 DPI：appwin.js 传来的是物理像素。不声明 DPI 感知时 Windows 会把它当逻辑像素再放大一次，
+    // 嵌入的模拟器窗口比宿主大（150% 缩放下大 1.5 倍）→ 画面右/下被裁、点击偏移（issue #40）。
+    [DllImport("user32.dll")] static extern bool SetProcessDpiAwarenessContext(IntPtr ctx);
+    [DllImport("user32.dll")] static extern bool SetProcessDPIAware();
     [DllImport("user32.dll")] static extern IntPtr GetParent(IntPtr c);
     [DllImport("user32.dll")] static extern int GetWindowLong(IntPtr h, int i);
     [DllImport("user32.dll")] static extern int SetWindowLong(IntPtr h, int i, int v);
@@ -955,6 +959,8 @@ public class ApkAgent
 
     public static void Serve(int port)
     {
+        // per-monitor v2（Win10 1703+），失败退回 system-aware
+        try { if (!SetProcessDpiAwarenessContext(new IntPtr(-4))) SetProcessDPIAware(); } catch { try { SetProcessDPIAware(); } catch { } }
         TcpListener l = new TcpListener(IPAddress.Loopback, port);
         l.Start();
         int actual = ((IPEndPoint)l.LocalEndpoint).Port;
