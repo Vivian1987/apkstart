@@ -41,7 +41,10 @@
     "selftest": "node scripts/selftest.js",
     "assoc:on": "node scripts/assoc.js on",
     "assoc:off": "node scripts/assoc.js off",
-    "test:boot": "node test/boot-test.js"
+    "test:boot": "node test/boot-test.js",
+    "test:i18n": "node test/i18n-test.js",
+    "test:i18n:ui": "electron test/i18n-ui-test.js",
+    "build:exe:test": "electron-builder --win nsis --x64 --config build/electron-builder-test.cjs --publish never"
   },
   "devDependencies": {
     "electron": "^33.4.11",
